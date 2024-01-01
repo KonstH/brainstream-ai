@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import axios from "axios"
-import { MessageSquare } from "lucide-react";
+import { Code } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Heading from "@/components/Heading";
 import { formSchema } from "./constants";
@@ -18,8 +18,9 @@ import Loader from "@/components/Loader";
 import { cn } from "@/lib/utils";
 import UserAvatar from "@/components/UserAvatar";
 import BotAvatar from "@/components/BotAvatar";
+import ReactMarkDown from "react-markdown";
 
-export default function ChatPage() {
+export default function CodePage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,7 +42,7 @@ export default function ChatPage() {
 
       const newMessages = [...messages, userMessage];
 
-      const response = await axios.post('/api/chat', {
+      const response = await axios.post('/api/code', {
         messages: newMessages
       })
 
@@ -67,11 +68,11 @@ export default function ChatPage() {
   return (
     <div>
       <Heading
-        title="Chat"
-        description="Advanced chat model"
-        icon={MessageSquare}
-        iconColor="text-violet-500"
-        bgColor="text-violet-500/10"
+        title="Code Generation"
+        description="Generate code through prompts."
+        icon={Code}
+        iconColor="text-green-700"
+        bgColor="text-green-700/10"
       />
       <div className="px-4 lg:px-8">
         <div>
@@ -83,7 +84,7 @@ export default function ChatPage() {
                     <Input
                       className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent"
                       disabled={isLoading}
-                      placeholder="Recommend a dish to bring to a potluck"
+                      placeholder="Give me a code snippet for a website sticky header."
                       {...field}
                     />
                   </FormControl>
@@ -114,9 +115,21 @@ export default function ChatPage() {
                 )}
               >
                 {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                <p className="text-sm">
-                  {message.content as string}
-                </p>
+                <ReactMarkDown
+                  components={{
+                    pre: ({ node, ...props}) => (
+                      <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
+                        <pre {...props} />
+                      </div>
+                    ),
+                    code: ({ node, ...props}) => (
+                      <code className="bg-black/10 rounded-lg p-1" {...props} />
+                    )
+                  }}
+                  className="text-sm overflow-hidden leading-7"
+                >
+                  {message.content as string || ""}
+                </ReactMarkDown>
               </div>
             ))}
           </div>
