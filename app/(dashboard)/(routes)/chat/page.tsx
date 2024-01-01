@@ -46,13 +46,11 @@ export default function ChatPage() {
       })
 
       setMessages(c => [...c, userMessage, response.data])
-      console.log('RES', response.data)
-      console.log('messages', messages)
 
       form.reset()
     } catch(error) {
       // TODO: Open pro upsell modal
-      console.log(error)
+      console.error(error)
     } finally {
       router.refresh()
     }
@@ -96,11 +94,7 @@ export default function ChatPage() {
           </Form>
         </div>
         <div className="space-y-4 mt-4">
-          {isLoading && (
-            <div className="p-78 rounded-lg w-full flex items-center justify-center bg-muted">
-              <Loader />
-            </div>
-          )}
+          {isLoading && <Loader />}
           {!messages.length && !isLoading && (
             <Empty label="No chats started." />
           )}

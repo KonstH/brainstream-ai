@@ -20,13 +20,12 @@ export async function POST(req: Request) {
 
     if (!userId) return new Response("Unauthorized", { status: 401 })
     if (!openai.apiKey) return new Response("Unauthorized", { status: 401 })
+    if (!messages) return new Response("Messages are required", { status: 400 })
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [instructionMessage, ...messages]
     });
-
-    response.choices.forEach(m => console.log('message routes.ts', m))
 
     return Response.json(response.choices[0].message);
   } catch (error) {
