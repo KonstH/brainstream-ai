@@ -1,6 +1,7 @@
 "use client";
 
 import * as z from "zod";
+import axios from "axios"
 import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Heading from "@/components/Heading";
@@ -10,6 +11,13 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+import Empty from "@/components/Empty";
+import Loader from "@/components/Loader";
+import { cn } from "@/lib/utils";
+import UserAvatar from "@/components/UserAvatar";
+import BotAvatar from "@/components/BotAvatar";
 
 export default function Chat() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -19,11 +27,35 @@ export default function Chat() {
     }
   });
 
+  const router = useRouter()
   const isLoading = form.formState.isSubmitting;
   const [isMounted, setIsMounted] = useState(false)
+  const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([])
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('values', values);
+    try {
+      const userMessage: ChatCompletionMessageParam = {
+        role: 'user',
+        content: values.prompt
+      }
+
+      const newMessages = [...messages, userMessage];
+
+      const response = await axios.post('/api/chat', {
+        messages: newMessages
+      })
+
+      setMessages(c => [...c, userMessage, response.data])
+      console.log('RES', response.data)
+      console.log('messages', messages)
+
+      form.reset()
+    } catch(error) {
+      // TODO: Open pro upsell modal
+      console.log(error)
+    } finally {
+      router.refresh()
+    }
   }
 
   useEffect(() => {
@@ -51,7 +83,7 @@ export default function Chat() {
                     <Input
                       className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent"
                       disabled={isLoading}
-                      placeholder="How do I calculate the radius of a cirlcle?"
+                      placeholder="Recommend a dish to bring to a potluck"
                       {...field}
                     />
                   </FormControl>
@@ -64,7 +96,30 @@ export default function Chat() {
           </Form>
         </div>
         <div className="space-y-4 mt-4">
-          Messages Content
+          {isLoading && (
+            <div className="p-78 rounded-lg w-full flex items-center justify-center bg-muted">
+              <Loader />
+            </div>
+          )}
+          {!messages.length && !isLoading && (
+            <Empty label="No chats started." />
+          )}
+          <div className="flex flex-col gap-y-4">
+            {messages.map(message => (
+              <div
+                key={message.content as string}
+                className={cn(
+                  "p-8 w-full flex items-start gap-x-8 rounded-lg",
+                  message.role === "user" ? "bg-white border border-black/10" : "bg-slate-700/10"
+                )}
+              >
+                {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
+                <p className="text-sm">
+                  {message.content as string}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
