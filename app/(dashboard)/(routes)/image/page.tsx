@@ -37,7 +37,7 @@ export default function ImagePage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setImages([]);
-      const response = await axios.post('/api/image', { ...values });
+      const response = await axios.post('/api/image', values);
       const urls = response.data.map((img: { url: string }) => img.url)
       setImages(urls);
 
