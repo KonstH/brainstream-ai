@@ -2,6 +2,7 @@
 
 import * as z from "zod";
 import axios from "axios"
+import toast from "react-hot-toast";
 import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Heading from "@/components/Heading";
@@ -51,9 +52,10 @@ export default function ChatPage() {
 
       form.reset()
     } catch(error: any) {
-      // User has reached their free tier limit, upsell PRO
-      if (error?.response?.status === 403) {
+      if (error?.response?.status === 403) { // User has reached their free tier limit, upsell PRO
         proModal.onOpen()
+      } else {
+        toast.error("Something went wrong")
       }
     } finally {
       router.refresh() // rehydrates all server components, fetching the newest data from db

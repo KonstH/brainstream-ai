@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import toast from "react-hot-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useProModal } from "@/hooks/useProModal";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ export default function ProModal() {
       window.location.href = response.data.url
 
     } catch (error) {
-      console.error('STRIPE_CLIENT_ERROR', error)
+      toast.error("Something went wrong")
     } finally {
       setIsLoading(false)
     }
@@ -57,7 +58,7 @@ export default function ProModal() {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={onSubscribe} size="lg" variant="premium" className="w-full">
+          <Button onClick={onSubscribe} size="lg" variant="premium" className="w-full" disabled={isLoading}>
             Upgrade
             <Zap className="w-4 h-4 ml-2 fill-white" />
           </Button>
