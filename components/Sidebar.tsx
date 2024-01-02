@@ -14,6 +14,7 @@ const montserrat = Montserrat({ weight: "600", subsets: ["latin"]})
 
 type SidebarProps = {
   apiLimitCount: number
+  isProUser: boolean
 }
 
 type Route = (
@@ -75,7 +76,7 @@ const routes: Route[] = [
   }
 ]
 
-export default function Sidebar({ apiLimitCount = 0 }: SidebarProps) {
+export default function Sidebar({ apiLimitCount = 0, isProUser = false }: SidebarProps) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function Sidebar({ apiLimitCount = 0 }: SidebarProps) {
           {routes.map(route => RouteLink(route))}
         </div>
       </div>
-      <TrialTracker apiLimitCount={apiLimitCount} />
+      <TrialTracker apiLimitCount={apiLimitCount} isProUser={isProUser} />
     </div>
   )
 }

@@ -10,15 +10,16 @@ import { useProModal } from "@/hooks/useProModal";
 
 type TrackerProps = {
   apiLimitCount: number
+  isProUser: boolean
 }
 
-export default function TrialTracker({ apiLimitCount }: TrackerProps) {
+export default function TrialTracker({ apiLimitCount, isProUser = false }: TrackerProps) {
   const proModal = useProModal();
   const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => { setIsMounted(true) }, [])
 
-  if (!isMounted) return null;
+  if (!isMounted || isProUser) return null;
   
   return (
     <div className="px-3">

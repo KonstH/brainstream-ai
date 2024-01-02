@@ -8,9 +8,10 @@ import { useEffect, useState } from "react";
 
 type MobileSidebarProps = {
   apiLimitCount: number
+  isProUser: boolean
 }
 
-export default function Navbar({ apiLimitCount }: MobileSidebarProps) {
+export default function Navbar({ apiLimitCount = 0, isProUser = false }: MobileSidebarProps) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function Navbar({ apiLimitCount }: MobileSidebarProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0">
-        <Sidebar apiLimitCount={apiLimitCount} />
+        <Sidebar apiLimitCount={apiLimitCount} isProUser={isProUser} />
       </SheetContent>
     </Sheet>
   )
