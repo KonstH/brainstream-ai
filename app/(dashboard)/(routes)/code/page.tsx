@@ -110,7 +110,7 @@ export default function CodePage() {
               <div
                 key={message.content as string}
                 className={cn(
-                  "p-8 w-full flex items-start gap-x-8 rounded-lg last:mb-8",
+                  "p-8 w-full flex items-start gap-x-8 rounded-lg first:mb-8",
                   message.role === "user" ? "bg-white border border-black/10" : "bg-slate-700/10"
                 )}
               >

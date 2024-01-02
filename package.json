@@ -9,7 +9,6 @@
     "lint": "next lint",
     "dbopen": "npx prisma studio",
     "dbpush": "npx prisma generate && npx prisma db push",
-    "dbclear": "npx prisma migrate reset && npx prisma generate && npx prisma db push",
     "postinstall": "prisma generate"
   },
   "dependencies": {
