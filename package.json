@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db": "npx prisma studio",
-    "dbpush": "npx prisma db push && npx prisma generate"
+    "dbopen": "npx prisma studio",
+    "dbpush": "npx prisma generate && npx prisma db push",
+    "dbclear": "npx prisma migrate reset && npx prisma generate && npx prisma db push"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.1",
