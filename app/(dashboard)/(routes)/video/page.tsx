@@ -14,8 +14,10 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Empty from "@/components/Empty";
 import Loader from "@/components/Loader";
+import { useProModal } from "@/hooks/useProModal";
 
 export default function VideoPage() {
+  const proModal = useProModal();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,9 +36,11 @@ export default function VideoPage() {
       const response = await axios.post('/api/video', values)
       setVideo(response.data[0]);
       form.reset()
-    } catch(error) {
-      // TODO: Open pro upsell modal
-      console.error(error)
+    } catch(error: any) {
+      // User has reached their free tier limit, upsell PRO
+      if (error?.response?.status === 403) {
+        proModal.onOpen()
+      }
     } finally {
       router.refresh() // rehydrates all server components, fetching the newest data from db
     }

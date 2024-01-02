@@ -18,8 +18,10 @@ import Loader from "@/components/Loader";
 import { cn } from "@/lib/utils";
 import UserAvatar from "@/components/UserAvatar";
 import BotAvatar from "@/components/BotAvatar";
+import { useProModal } from "@/hooks/useProModal";
 
 export default function ChatPage() {
+  const proModal = useProModal();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,9 +50,11 @@ export default function ChatPage() {
       setMessages(c => [...c, userMessage, response.data])
 
       form.reset()
-    } catch(error) {
-      // TODO: Open pro upsell modal
-      console.error(error)
+    } catch(error: any) {
+      // User has reached their free tier limit, upsell PRO
+      if (error?.response?.status === 403) {
+        proModal.onOpen()
+      }
     } finally {
       router.refresh() // rehydrates all server components, fetching the newest data from db
     }

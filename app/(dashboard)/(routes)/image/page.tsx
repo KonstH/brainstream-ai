@@ -18,8 +18,10 @@ import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
+import { useProModal } from "@/hooks/useProModal";
 
 export default function ImagePage() {
+  const proModal = useProModal();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,9 +44,11 @@ export default function ImagePage() {
       setImages(urls);
 
       form.reset()
-    } catch(error) {
-      // TODO: Open pro upsell modal
-      console.error(error)
+    } catch(error: any) {
+      // User has reached their free tier limit, upsell PRO
+      if (error?.response?.status === 403) {
+        proModal.onOpen()
+      }
     } finally {
       router.refresh() // rehydrates all server components, fetching the newest data from db
     }

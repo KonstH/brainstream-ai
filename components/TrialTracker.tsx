@@ -6,14 +6,16 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { MAX_FREE_COUNTS } from "@/constants";
 import { Zap } from "lucide-react";
+import { useProModal } from "@/hooks/useProModal";
 
 type TrackerProps = {
   apiLimitCount: number
 }
 
 export default function TrialTracker({ apiLimitCount }: TrackerProps) {
+  const proModal = useProModal();
   const [isMounted, setIsMounted] = useState(false);
-
+  
   useEffect(() => { setIsMounted(true) }, [])
 
   if (!isMounted) return null;
@@ -26,7 +28,7 @@ export default function TrialTracker({ apiLimitCount }: TrackerProps) {
             <p>{apiLimitCount} / {MAX_FREE_COUNTS} Free Generations</p>
           </div>
           <Progress className="h-3 mb-6" value={(apiLimitCount / MAX_FREE_COUNTS) * 100} />
-          <Button className="w-full" variant="premium">
+          <Button onClick={proModal.onOpen} className="w-full" variant="premium">
             Upgrade
             <Zap className="w-4 h-4 ml-2 fill-white" />
           </Button>
