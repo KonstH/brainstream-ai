@@ -8,8 +8,13 @@ import { cn } from "@/lib/utils";
 import { Code, ImageIcon, LayoutDashboard, LucideIcon, MessageSquare, Music, Settings, VideoIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import TrialTracker from "@/components/TrialTracker";
 
 const montserrat = Montserrat({ weight: "600", subsets: ["latin"]})
+
+type SidebarProps = {
+  apiLimitCount: number
+}
 
 type Route = (
   {
@@ -70,7 +75,7 @@ const routes: Route[] = [
   }
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ apiLimitCount = 0 }: SidebarProps) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -94,6 +99,7 @@ export default function Sidebar() {
           {routes.map(route => RouteLink(route))}
         </div>
       </div>
+      <TrialTracker apiLimitCount={apiLimitCount} />
     </div>
   )
 }

@@ -46,7 +46,7 @@ export default function ImagePage() {
       // TODO: Open pro upsell modal
       console.error(error)
     } finally {
-      router.refresh()
+      router.refresh() // rehydrates all server components, fetching the newest data from db
     }
   }
 

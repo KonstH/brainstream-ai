@@ -52,7 +52,7 @@ export default function ChatPage() {
       // TODO: Open pro upsell modal
       console.error(error)
     } finally {
-      router.refresh()
+      router.refresh() // rehydrates all server components, fetching the newest data from db
     }
   }
 
