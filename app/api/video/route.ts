@@ -1,3 +1,4 @@
+import { checkApiLimit, increaseApiLimit } from "@/lib/apiLimit";
 import { auth } from "@clerk/nextjs"
 import Replicate from "replicate";
 
@@ -14,6 +15,14 @@ export async function POST(req: Request) {
     if (!userId) return new Response("Unauthorized", { status: 401 })
     if (!prompt) return new Response("Prompt is required", { status: 400 })
 
+    const freeTrial = await checkApiLimit();
+
+    /**
+     * Note: Status 403 is crucial here, as it will allow us to detect the limit on the
+     * font-end accordingly and trigger the PRO subscription
+     */
+    if (!freeTrial) return new Response("Free trial has expired.", { status: 403 })
+
     const response = await replicate.run(
       "anotherjesse/zeroscope-v2-xl:9f747673945c62801b13b84701c783929c0ee784e4748ec062204894dda1a351",
       {
@@ -23,6 +32,7 @@ export async function POST(req: Request) {
       }
     );
 
+    await increaseApiLimit();
     return Response.json(response);
   } catch (error) {
     console.error("Video Error:", error)

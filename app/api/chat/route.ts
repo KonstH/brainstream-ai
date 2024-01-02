@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs"
-
 import OpenAI from 'openai';
+import { increaseApiLimit, checkApiLimit } from "@/lib/apiLimit";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Ensure your API key is stored securely
@@ -15,12 +15,21 @@ export async function POST(req: Request) {
     if (!userId) return new Response("Unauthorized", { status: 401 })
     if (!openai.apiKey) return new Response("Unauthorized", { status: 401 })
     if (!messages) return new Response("Messages are required", { status: 400 })
+    
+    const freeTrial = await checkApiLimit();
+
+    /**
+     * Note: Status 403 is crucial here, as it will allow us to detect the limit on the
+     * font-end accordingly and trigger the PRO subscription
+     */
+    if (!freeTrial) return new Response("Free trial has expired.", { status: 403 })
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: messages,
     });
 
+    await increaseApiLimit();
     return Response.json(response.choices[0].message);
   } catch (error) {
     console.error("Chat Error:", error)

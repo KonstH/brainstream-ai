@@ -1,3 +1,4 @@
+import { checkApiLimit, increaseApiLimit } from "@/lib/apiLimit";
 import { auth } from "@clerk/nextjs"
 
 import OpenAI from 'openai';
@@ -18,12 +19,21 @@ export async function POST(req: Request) {
     if (!amount) return new Response("Amount is required", { status: 400 })
     if (!resolution) return new Response("Resolution is required", { status: 400 })
 
+    const freeTrial = await checkApiLimit();
+
+    /**
+     * Note: Status 403 is crucial here, as it will allow us to detect the limit on the
+     * font-end accordingly and trigger the PRO subscription
+     */
+    if (!freeTrial) return new Response("Free trial has expired.", { status: 403 })
+
     const response = await openai.images.generate({
       prompt,
       n: parseInt(amount, 10),
       size: resolution
     })
 
+    await increaseApiLimit();
     return Response.json(response.data);
   } catch (error) {
     console.error("Image Error:", error)
