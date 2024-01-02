@@ -105,7 +105,7 @@ export default function CodePage() {
           {!messages.length && !isLoading && (
             <Empty label="No chats started." />
           )}
-          <div className="flex flex-col gap-y-4">
+          <div className="flex flex-col-reverse gap-y-4">
             {messages.map(message => (
               <div
                 key={message.content as string}
